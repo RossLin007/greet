@@ -3,8 +3,10 @@ import openai
 import gradio as gr
 import pickle
 
-# openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = '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'
+#openai.api_key = os.getenv("OPENAI_API_KEY")
+#print(openai.api_key)
+#openai.api_key = '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'
+openai.api_key = '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'
 
 messages = [
     {"role": "system", "content": "You are a teacher"}
@@ -65,7 +67,7 @@ def auth_contorl(username, password):
 block = gr.Blocks(
     css="""
     #component-0 {justify-content:space-between;height:-webkit-fill-available;}
-    #chatbot {height:-webkit-fill-available;overflow:scroll;}
+    #chatbot {height:500px !important;height:-webkit-fill-available;overflow:scroll !important;;}
     footer {display: none !important;}
     """
 )
@@ -93,14 +95,17 @@ with block:
     state = gr.State()
     submit.click(chat_with_ai, inputs=[
                  message, state], outputs=[chatbot, state])
+    message.submit(chat_with_ai, inputs=[
+                 message, state], outputs=[chatbot, state]).update(value='')
     #        .then(lambda x: message.update(value=''), None, [message])
     submit.click(lambda x: message.update(value=''), [submit], [message])
-    message.submit(lambda x: message.update(value=''), [submit], [message])
+    # message.submit(lambda x: message.update(value=''), [submit], [message])
+
     block.load(init_history, inputs=None, outputs=chatbot)
 
 block.launch(debug=True,
              auth=auth_contorl,
              server_name="0.0.0.0",
-             server_port=3501,
+             server_port=3500,
              show_api=False
              )
