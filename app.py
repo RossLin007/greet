@@ -23,17 +23,21 @@ def openai_connect(input):
     messages.append({"role": "assistant", "content": resp})
     return resp
 
+
 def history_path(request: gr.Request):
-    path = request.cookies and hash(request.cookies) or ''
-    return f'/tmp/history_{path}.pkl'   
+    path = request.cookies.__dict__.get("access-token-unsecure")
+    return f'/tmp/history_{request.client.host}{hash(path)}.pkl'
+
 
 def save_history(history, request: gr.Request):
-    path = history_path(request)    
+    path = history_path(request)
+    # print("save history to: %s" % path)
     pickle.dump(history, open(path, 'wb'))
 
 
 def load_history(request: gr.Request):
     path = history_path(request)
+    # print("load history from: %s" % path)
     if os.path.exists(path):
         history = pickle.load(open(path, 'rb'))
         if (history and len(history) <= 50):
@@ -49,7 +53,7 @@ def chat_with_ai(input, history, request: gr.Request):
     output = output and f"""<pre style="font-size:14px;word-wrap:break-word;white-space:pre-wrap; ">{output}</pre>"""
     print('AI:', output)
     history.append((input, output))
-    save_history(history,request)
+    save_history(history, request)
     return history, history
 
 
@@ -58,7 +62,13 @@ def auth_contorl(username, password):
     return auth.get(username, False) and auth.get(username) == password and True
 
 
-block = gr.Blocks(css="#chatbot {height: 100%;height:-webkit-fill-available;overflow: scroll;};")
+block = gr.Blocks(
+    css="""
+    #component-0 {justify-content:space-between;height:-webkit-fill-available;}
+    #chatbot {height:-webkit-fill-available;overflow:scroll;}
+    footer {display: none !important;}
+    """
+)
 block.title = "fGPT"
 block.theme = "gradio/monochrome"
 
@@ -76,12 +86,9 @@ with block:
         every=float)
     chatbot.color_map = ["green", "pink"]
 
-    with gr.Row():
-        with gr.Column(min_width=200):
-            message = gr.Textbox(
+    message = gr.Textbox(
                 placeholder='Type your message here...', lines=1, label='', every=float)
-        with gr.Column(min_width=50):
-            submit = gr.Button("SEND")
+    submit = gr.Button("SEND")
 
     state = gr.State()
     submit.click(chat_with_ai, inputs=[
@@ -94,5 +101,6 @@ with block:
 block.launch(debug=True,
              auth=auth_contorl,
              server_name="0.0.0.0",
-             server_port=3500
+             server_port=3501,
+             show_api=False
              )
