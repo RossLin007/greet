@@ -15,7 +15,7 @@ messages = [
 
 def openai_connect(input):
     global messages
-    len(messages) > 50 and messages.pop(0)
+    len(messages) > 10 and messages.pop(0)
     messages.append({"role": "user", "content": input})
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -42,7 +42,7 @@ def load_history(request: gr.Request):
     # print("load history from: %s" % path)
     if os.path.exists(path):
         history = pickle.load(open(path, 'rb'))
-        if (history and len(history) <= 50):
+        if (history and len(history)):
             return history
     else:
         return []
