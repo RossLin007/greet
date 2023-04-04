@@ -2,7 +2,12 @@ import os
 import openai
 import gradio as gr
 import pickle
+import logging
 from openai.error import APIError
+
+log_format = "%(asctime)s::%(levelname)s::%(name)s::"\
+             "%(filename)s::%(lineno)d::%(message)s"
+logging.basicConfig(level='DEBUG', format=log_format)
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 # print(openai.api_key)
@@ -28,9 +33,13 @@ def openai_connect(input):
             )
         resp = response.choices[0]['message']['content'] or ''
     except APIError as e:
-        resp = ('response error: %s', e)
+        resp = 'response error'
+        logging.error(e)
 
     messages.append({"role": "assistant", "content": resp})
+    logging.info(f"input: {input}, output: {resp}")
+    logging.info(f"prompt messages: {messages}")
+
     return resp
 
 
@@ -41,7 +50,7 @@ def history_path(request: gr.Request):
 
 def save_history(history, request: gr.Request):
     path = history_path(request)
-    # print("save history to: %s" % path)
+    logging.info(f"""save to {path}:{history}""")
     pickle.dump(history, open(path, 'wb'))
 
 
@@ -61,7 +70,6 @@ def chat_with_ai(input, history, request: gr.Request):
     history = load_history(request)
     output = openai_connect(input)
     output = output and f"""<pre style="font-size:14px;word-wrap:break-word;white-space:pre-wrap; ">{output}</pre>"""
-    print('AI:', output)
     history.append((input, output))
     save_history(history, request)
     return history, history
