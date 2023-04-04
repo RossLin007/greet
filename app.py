@@ -2,10 +2,11 @@ import os
 import openai
 import gradio as gr
 import pickle
+from openai.error import APIError
 
-#openai.api_key = os.getenv("OPENAI_API_KEY")
-#print(openai.api_key)
-#openai.api_key = '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'
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+# print(openai.api_key)
+# openai.api_key = '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'
 openai.api_key = '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'
 
 messages = [
@@ -15,13 +16,20 @@ messages = [
 
 def openai_connect(input):
     global messages
+
     len(messages) > 10 and messages.pop(0)
+
     messages.append({"role": "user", "content": input})
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=messages
-    )
-    resp = response.choices[0]['message']['content'] or ''
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+            )
+        resp = response.choices[0]['message']['content'] or ''
+    except APIError as e:
+        resp = ('response error: %s', e)
+
     messages.append({"role": "assistant", "content": resp})
     return resp
 
@@ -89,14 +97,14 @@ with block:
     chatbot.color_map = ["green", "pink"]
 
     message = gr.Textbox(
-                placeholder='Type your message here...', lines=1, label='', every=float)
+        placeholder='Type your message here...', lines=1, label='', every=float)
     submit = gr.Button("SEND")
 
     state = gr.State()
     submit.click(chat_with_ai, inputs=[
                  message, state], outputs=[chatbot, state])
     message.submit(chat_with_ai, inputs=[
-                 message, state], outputs=[chatbot, state]).update(value='')
+        message, state], outputs=[chatbot, state]).update(value='')
     #        .then(lambda x: message.update(value=''), None, [message])
     submit.click(lambda x: message.update(value=''), [submit], [message])
     # message.submit(lambda x: message.update(value=''), [submit], [message])
