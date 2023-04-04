@@ -8,11 +8,14 @@ from openai.error import APIError
 log_format = "%(asctime)s::%(levelname)s::%(name)s::"\
              "%(filename)s::%(lineno)d::%(message)s"
 logging.basicConfig(level='DEBUG', format=log_format)
+logger = logging.getLogger(__name__)
+
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 # print(openai.api_key)
 # openai.api_key = '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'
-openai.api_key = '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'
+# openai.api_key = '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'
+openai.api_key = "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"
 
 messages = [
     {"role": "system", "content": "You are a teacher"}
@@ -30,15 +33,15 @@ def openai_connect(input):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=messages
-            )
+        )
         resp = response.choices[0]['message']['content'] or ''
     except APIError as e:
         resp = 'response error'
-        logging.error(e)
+        logger.error(e)
 
     messages.append({"role": "assistant", "content": resp})
-    logging.info(f"input: {input}, output: {resp}")
-    logging.info(f"prompt messages: {messages}")
+    logger.info(f"input: {input}, output: {resp}")
+    logger.info(f"prompt messages: {messages}")
 
     return resp
 
@@ -50,7 +53,7 @@ def history_path(request: gr.Request):
 
 def save_history(history, request: gr.Request):
     path = history_path(request)
-    logging.info(f"""save to {path}:{history}""")
+    logger.info(f"""save to {path}:{history}""")
     pickle.dump(history, open(path, 'wb'))
 
 
