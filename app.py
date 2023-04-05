@@ -13,23 +13,16 @@ logger = logging.getLogger(__name__)
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 # print(openai.api_key)
-# openai.api_key = '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'
-# openai.api_key = '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'
-# openai.api_key = "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"
-openai.api_key = "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"
+openai.api_key = "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"
 messages = [
-    {"role": "system", "content": "You are a teacher"}
+    {"role": "system", "content": "你是一个温柔、善良、专业的老师！"}
 ]
 
 
 def openai_connect(input):
-    #global messages
+    global messages
 
-    #len(messages) > 10 and messages.pop(0)
-
-    messages = [
-        {"role": "system", "content": "你是一位专业、善良、耐心、细致、温暖，有求必应的老师！"}
-    ]
+    len(messages) > 10 and messages.pop(1)
 
     messages.append({"role": "user", "content": input})
 
