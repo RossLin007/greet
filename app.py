@@ -12,24 +12,29 @@ logger = logging.getLogger(__name__)
 
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
-# print(openai.api_key) 
-openai.api_key = "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"
+# print(openai.api_key)
+openai.api_key = "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"
 messages = [
-    {"role": "system", "content": "你是一个温柔、善良、专业的老师！"}
+    {"role": "system", "content": """你是个专家。你中文英文都非常好。Your task is to be my brainstorming partner and provide creative ideas and suggestions for a given topic or problem. Your response should include original, unique, and relevant ideas that could help solve the problem or further explore the topic in an interesting way. And You also need to consider both sides of the problem. Please note that your response should also take into account any specific requirements or constraints of the task."""}
 ]
 
 
 def openai_connect(input):
     global messages
 
-    len(messages) > 10 and messages.pop(1)
+    len(messages) > 5 and messages.pop(1)
 
     messages.append({"role": "user", "content": input})
 
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=messages
+            messages=messages,
+            temperature=0,
+            max_tokens=600,
+            top_p=1.0,
+            frequency_penalty=0.0,
+            presence_penalty=0.0
         )
         logger.info(response)
         resp = response.choices[0]['message']['content'] or ''
@@ -37,7 +42,7 @@ def openai_connect(input):
         resp = 'response error'
         logger.error(e)
 
-    #messages.append({"role": "assistant", "content": resp})
+    messages.append({"role": "assistant", "content": resp})
     logger.info(f"input: {input}, output: {resp}")
     logger.info(f"prompt messages: {messages}")
 
