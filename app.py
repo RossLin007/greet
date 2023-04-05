@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
-# print(openai.api_key)
+# print(openai.api_key) 
 openai.api_key = "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"
 messages = [
     {"role": "system", "content": "你是一个温柔、善良、专业的老师！"}
