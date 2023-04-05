@@ -15,17 +15,21 @@ logger = logging.getLogger(__name__)
 # print(openai.api_key)
 # openai.api_key = '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'
 # openai.api_key = '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'
-openai.api_key = "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"
-
+# openai.api_key = "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"
+openai.api_key = "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"
 messages = [
     {"role": "system", "content": "You are a teacher"}
 ]
 
 
 def openai_connect(input):
-    global messages
+    #global messages
 
-    len(messages) > 10 and messages.pop(0)
+    #len(messages) > 10 and messages.pop(0)
+
+    messages = [
+        {"role": "system", "content": "你是一位专业、善良、耐心、细致、温暖，有求必应的老师！"}
+    ]
 
     messages.append({"role": "user", "content": input})
 
@@ -34,12 +38,13 @@ def openai_connect(input):
             model="gpt-3.5-turbo",
             messages=messages
         )
+        logger.info(response)
         resp = response.choices[0]['message']['content'] or ''
     except APIError as e:
         resp = 'response error'
         logger.error(e)
 
-    messages.append({"role": "assistant", "content": resp})
+    #messages.append({"role": "assistant", "content": resp})
     logger.info(f"input: {input}, output: {resp}")
     logger.info(f"prompt messages: {messages}")
 
