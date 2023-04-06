@@ -1,4 +1,5 @@
 import os
+import sys
 import openai
 import gradio as gr
 import pickle
@@ -22,7 +23,9 @@ messages = [
 def openai_connect(input):
     global messages
 
-    len(messages) > 5 and messages.pop(1)
+    #len(messages) > 5 and messages.pop(1)
+    if sys.getsizeof(messages) > 15000:
+        messages.pop(1)
 
     messages.append({"role": "user", "content": input})
 
@@ -37,6 +40,8 @@ def openai_connect(input):
             presence_penalty=0.0
         )
         logger.info(response)
+        if response.usage.total_tokens > 3500 :
+            messages.pop(1)
         resp = response.choices[0]['message']['content'] or ''
     except APIError as e:
         resp = 'response error'
