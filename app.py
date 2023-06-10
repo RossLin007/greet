@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 # print(openai.api_key)
-openai.api_key = "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"
+openai.api_key = "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"
 messages = [
     {"role": "system", "content": """你是个专家。你中文英文都非常好。Your task is to be my brainstorming partner and provide creative ideas and suggestions for a given topic or problem. Your response should include original, unique, and relevant ideas that could help solve the problem or further explore the topic in an interesting way. And You also need to consider both sides of the problem. Please note that your response should also take into account any specific requirements or constraints of the task."""}
 ]
@@ -99,8 +99,6 @@ block = gr.Blocks(
     """
 )
 block.title = "fGPT"
-block.theme = "gradio/monochrome"
-
 
 def init_history(request: gr.Request):
     return load_history(request)
