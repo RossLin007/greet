@@ -132,5 +132,6 @@ block.launch(debug=True,
              auth=auth_contorl,
              server_name="0.0.0.0",
              server_port=3500,
-             show_api=False
+             show_api=False,
+             share=True
              )
